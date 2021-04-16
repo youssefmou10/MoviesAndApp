@@ -7,6 +7,16 @@ import { getFilmsFromApiWithSearchedText } from "../API/TDMBiAPI";
 import films from "../helpers/FilmData";
 import { connect } from 'react-redux';
 class Search extends React.Component {
+  constructor(props) {
+    super(props);
+    this.page=0
+    this.totalPage=0
+    this.state = {
+      films: [],
+      isLoading: false,
+    };
+  
+  }
   _loadFilms() {
     this.setState({ isLoading: true });
     if (this.searchedText.length > 0) {
@@ -24,26 +34,7 @@ class Search extends React.Component {
     }
   }
 
-  constructor(props) {
-    super(props);
-    this.page=0
-    this.totalPage=0
-    this.state = {
-      films: [],
-      isLoading: false,
-    };
-    this.searchedText = "";
-  }
-  _displayLoading() {
-    if (this.state.isLoading) {
-      return (
-        <View style={styles.loading_container}>
-          <ActivityIndicator size="large" />
-          {/* Le component ActivityIndicator possède une propriété size pour définir la taille du visuel de chargement : small ou large. Par défaut size vaut small, on met donc large pour que le chargement soit bien visible */}
-        </View>
-      );
-    }
-  }
+  
   _searchFilms(){
     this.page=0
     this.totalPage=0
@@ -60,6 +51,15 @@ class Search extends React.Component {
   }
   _displayDetailForFilm = (idFilm) => {
     this.props.navigation.navigate("FilmDetail",{idFilm:idFilm})
+  }
+  _displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator size='large' />
+        </View>
+      )
+    }
   }
   
   render() {
@@ -87,13 +87,15 @@ class Search extends React.Component {
             <FilmItem 
               film={item}
               // Ajout d'une props isFilmFavorite pour indiquer à l'item d'afficher un 🖤 ou non
-              isFilmFavorite={(this.props.favoritesFilm.findIndex(film => film.id === item.id) !== -1) ? true : false}
+              isFilmFavorite={(this.props.favoritesFilm.findIndex
+                (film => film.id === item.id) !== -1) ? true : false}
               displayDetailForFilm={this._displayDetailForFilm}
             />
           }
           onEndReachedThreshold={0.5}
           onEndReached={() => {
-              if (this.page < this.totalPages) { // On vérifie également qu'on n'a pas atteint la fin de la pagination (totalPages) avant de charger plus d'éléments
+              if (this.page < this.totalPages) { 
+    // On vérifie également qu'on n'a pas atteint la fin de la pagination (totalPages) avant de charger plus d'éléments
                  this._loadFilms()
               }
           }}
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    top: 200,
+    top: 100,
     bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
